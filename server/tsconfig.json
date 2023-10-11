@@ -9,12 +9,15 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "strictPropertyInitialization": false,
     "moduleResolution": "Node",
     "baseUrl": "../",
     "paths": {
       "*": ["src/*"]
     },
     "allowJs": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "resolveJsonModule": true,
     "declaration": true,
     "sourceMap": true

@@ -3,7 +3,7 @@ import { Comment } from './comment.model';
 import { Video } from './video.model';
 
 @pre('save', () => {})
-export class User {
+export class UserSchema {
   @prop({ required: true })
   name: string;
 
@@ -20,6 +20,6 @@ export class User {
   comments?: Ref<Comment>[];
 }
 
-const userModel = getModelForClass(User);
+const userModel = getModelForClass(UserSchema);
 
 export default userModel;

@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import { AnyZodObject, ZodError } from 'zod';
+import { AnyZodObject, z } from 'zod';
+import AppError from '../utils/AppError';
 
 interface RequestValidators {
   body?: AnyZodObject;
@@ -7,7 +8,7 @@ interface RequestValidators {
   query?: AnyZodObject;
 }
 
-export function validateRequest(validators: RequestValidators) {
+export function validateRequest(validators: RequestValidators) { 
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
       if (validators.body) {
@@ -19,12 +20,13 @@ export function validateRequest(validators: RequestValidators) {
       if (validators.params) {
         req.params = await validators.params.parseAsync(req.params);
       }
-      next();
-    } catch (error) {
-      if (error instanceof ZodError) {
-        res.status(422);
+      return next();
+    } catch (error: any) {
+      console.log(error instanceof z.ZodError);
+      if (error instanceof z.ZodError) {
+        return next(new AppError(422, 'Please provide all the fields correctly'));
       }
-      return next(error);
+      return next(new AppError(500, error.message));
     }
   };
 }

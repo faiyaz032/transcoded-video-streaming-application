@@ -4,6 +4,7 @@ import express, { Application, NextFunction, Request, Response } from 'express';
 import morgan from 'morgan';
 import globalErrorMiddleware from './middlewares/globalErrorMiddleware';
 import notFoundMiddleware from './middlewares/notFoundMiddleware';
+import apiRouter from './routes/index.routes';
 
 const app: Application = express();
 
@@ -18,6 +19,9 @@ app.get('/', (req: Request, res: Response, next: NextFunction) => {
     message: 'Hello from the server',
   });
 });
+
+//api routes
+app.use('/api', apiRouter);
 
 app.all('*', notFoundMiddleware);
 app.use(globalErrorMiddleware);

@@ -21,5 +21,22 @@ export default class AuthController {
       next(new AppError(500, error.message));
     }
   };
-  login: RequestHandler = async (req, res, next) => {};
+
+  login: RequestHandler = async (req, res, next) => {
+    try {
+      const token = await this.service.login(req.body);
+      if (token === null || token === false) {
+        return next(new AppError(402, 'Incorrect email or password'));
+      }
+      res.cookie('AUTH_COOKIE', `Bearer ${token}`, {
+        httpOnly: true,
+      });
+      res.status(200).json({
+        status: 'success',
+        message: 'user logged in successfully',
+      });
+    } catch (error: any) {
+      next(new AppError(500, error.message));
+    }
+  };
 }

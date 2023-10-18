@@ -24,7 +24,7 @@ export function validateRequest(validators: RequestValidators) {
     } catch (error: any) {
       console.log(error instanceof z.ZodError);
       if (error instanceof z.ZodError) {
-        return next(new AppError(422, 'Please provide all the fields correctly'));
+        return next(new AppError(422, error.message));
       }
       return next(new AppError(500, error.message));
     }

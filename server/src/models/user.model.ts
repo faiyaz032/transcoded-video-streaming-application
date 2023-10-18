@@ -1,7 +1,5 @@
-import { Ref, getModelForClass, pre, prop } from '@typegoose/typegoose';
+import { getModelForClass, pre, prop } from '@typegoose/typegoose';
 import bcrypt from 'bcryptjs';
-import { Comment } from './comment.model';
-import { Video } from './video.model';
 
 @pre<UserSchema>('save', async function () {
   if (!this.isModified('password')) return;
@@ -20,12 +18,6 @@ export class UserSchema {
 
   @prop({ required: true })
   password: string;
-
-  @prop({ ref: () => Video, default: [] })
-  videos?: Ref<Video>[];
-
-  @prop({ ref: () => Comment, default: [] })
-  comments?: Ref<Comment>[];
 }
 
 const userModel = getModelForClass(UserSchema, {

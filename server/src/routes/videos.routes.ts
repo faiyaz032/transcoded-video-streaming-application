@@ -1,12 +1,11 @@
 import { Router } from 'express';
-import multer from 'multer';
 import VideosController from '../controllers/videos.controller';
 import { validateRequest } from '../middlewares/validateRequest';
+import upload from '../utils/multer';
 import { Video } from '../validators';
 
 const videosRouter = Router();
 const videosController = new VideosController();
-const upload = multer();
 
 videosRouter.post(
   '/',

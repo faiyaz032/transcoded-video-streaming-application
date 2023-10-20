@@ -12,10 +12,13 @@ export class VideoSchema {
   title: string;
 
   @prop({ required: true })
-  description: string;
+  videoName: string;
 
-  @prop()
-  videoUrl: string; // URL of the video file
+  @prop({ required: true })
+  videoPath: string;
+
+  @prop({ required: true })
+  description: string;
 
   @prop({ ref: () => UserSchema })
   uploader: Ref<UserSchema>;

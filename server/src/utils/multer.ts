@@ -2,11 +2,11 @@ import multer from 'multer';
 import path from 'path';
 import AppError from './AppError';
 
-const UPLOAD_FOLDER = path.join(__dirname, '../uploads/');
+export const MULTER_UPLOAD_FOLDER = path.join(__dirname, '../uploads/');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, UPLOAD_FOLDER);
+    cb(null, MULTER_UPLOAD_FOLDER);
   },
 
   filename: (req, file, cb) => {
@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({
+export const upload = multer({
   storage,
   fileFilter: (req, file, cb) => {
     const allowedMimeTypes = ['video/mp4', 'video/mpeg', 'video/quicktime'];
@@ -27,5 +27,3 @@ const upload = multer({
     }
   },
 });
-
-export default upload;

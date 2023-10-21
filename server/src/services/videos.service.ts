@@ -14,6 +14,7 @@ export default class VideosService {
         ...video,
         tags: video.tags.split(','),
         videoPath,
+        videoName,
       });
       if (!createdVideo) {
         return null;
@@ -25,4 +26,12 @@ export default class VideosService {
     }
   }
 
+  async getVideo(videoName: string) {
+    try {
+      return await this.model.findOne({ videoName: videoName });
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
 }

@@ -23,6 +23,11 @@ export const Video = z.object({
   tags: z.string(),
 });
 
+export const VideoName = z.object({
+  videoName: z.string(),
+});
+
 export type IUser = z.infer<typeof User>;
 export type IUserLogin = z.infer<typeof UserLogin>;
 export type IVideo = z.infer<typeof Video>;
+export type IVideoName = z.infer<typeof VideoName>;

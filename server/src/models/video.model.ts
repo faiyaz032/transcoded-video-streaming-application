@@ -26,9 +26,6 @@ export class VideoSchema {
   @prop({ default: Date.now })
   uploadDate?: Date;
 
-  @prop({ ref: 'Comment' })
-  comments?: Ref<Comment>[];
-
   @prop({ type: () => [String] })
   tags?: string[];
 }

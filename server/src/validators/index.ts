@@ -26,8 +26,18 @@ export const Video = z.object({
 export const VideoName = z.object({
   videoName: z.string(),
 });
+export const VideoId = z.object({
+  videoId: z.string(),
+});
+
+export const Comment = z.object({
+  content: z.string({ required_error: 'comment content is required' }),
+  video: z.string(),
+});
 
 export type IUser = z.infer<typeof User>;
 export type IUserLogin = z.infer<typeof UserLogin>;
 export type IVideo = z.infer<typeof Video>;
 export type IVideoName = z.infer<typeof VideoName>;
+export type IComment = z.infer<typeof Comment>;
+export type IVideoId = z.infer<typeof VideoId>;

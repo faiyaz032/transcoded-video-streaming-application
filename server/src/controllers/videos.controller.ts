@@ -38,7 +38,9 @@ export default class VideosController {
 
       const videoStream = fs.createReadStream(video.videoPath);
 
+      //TODO: need to make the mime type dynamic as the video
       res.setHeader('Content-Type', 'video/mp4');
+
       res.setHeader('Content-Length', fs.statSync(video.videoPath).size);
 
       videoStream.pipe(res);

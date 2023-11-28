@@ -1,23 +1,26 @@
 import ffmpeg from 'fluent-ffmpeg';
 import fs from 'fs';
 import path from 'path';
+import getFfmpegOptions from './getFfmpegOptions';
+import getFileName from './getFileName';
 import { MULTER_UPLOAD_FOLDER } from './multer';
 
-export const HLS_OUTPUT_FOLDER = path.join(MULTER_UPLOAD_FOLDER, 'hls');
-
-export async function generateHlsSegments(inputFilePath: string, outputFileName: string) {
+export async function generateHlsSegments(
+  inputFilePath: string,
+  outputFileName: string,
+  qualities: string[]
+) {
   return new Promise((resolve, reject) => {
+    const HLS_OUTPUT_FOLDER = path.join(MULTER_UPLOAD_FOLDER, getFileName(outputFileName));
+
     if (!fs.existsSync(HLS_OUTPUT_FOLDER)) {
       fs.mkdirSync(HLS_OUTPUT_FOLDER);
     }
 
+    const ffmpegOptions = getFfmpegOptions(qualities, 10, HLS_OUTPUT_FOLDER);
+
     ffmpeg(inputFilePath)
-      .outputOptions([
-        '-c:v h264',
-        '-hls_time 10', // Set the duration of each segment (in seconds)
-        '-hls_list_size 0', // Do not limit the number of playlist entries
-        '-hls_segment_filename ' + path.join(HLS_OUTPUT_FOLDER, 'segment%d.ts'),
-      ])
+      .outputOptions(ffmpegOptions)
       .output(path.join(HLS_OUTPUT_FOLDER, outputFileName + '.m3u8'))
       .on('end', () => {
         console.log('HLS segments generated successfully');

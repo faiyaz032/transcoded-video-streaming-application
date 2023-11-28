@@ -2,9 +2,7 @@ import { RequestHandler } from 'express';
 import fs from 'fs';
 import VideosService from '../services/videos.service';
 import AppError from '../utils/AppError';
-import convertVideoResolution from '../utils/convertVideoResolution';
 import { generateHlsSegments } from '../utils/generateHlsSegments';
-import { MULTER_UPLOAD_FOLDER } from '../utils/multer';
 
 export default class VideosController {
   private service;
@@ -22,8 +20,7 @@ export default class VideosController {
 
     try {
       // Convert the uploaded video to different resolutions
-      await convertVideoResolution(req.file.path, MULTER_UPLOAD_FOLDER, req.file.filename);
-      await generateHlsSegments(req.file.path, req.file.filename);
+      await generateHlsSegments(req.file.path, req.file.filename, ['720p', '1080p']);
 
       // Create a video record in the database
       const video = await this.service.createVideo(
@@ -39,6 +36,7 @@ export default class VideosController {
         data: video,
       });
     } catch (error: any) {
+      console.log(error);
       // Handle errors and pass them to the error handling middleware
       next(new AppError(500, error.message));
     }

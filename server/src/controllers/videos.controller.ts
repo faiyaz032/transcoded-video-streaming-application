@@ -3,6 +3,7 @@ import fs from 'fs';
 import VideosService from '../services/videos.service';
 import AppError from '../utils/AppError';
 import convertVideoResolution from '../utils/convertVideoResolution';
+import { generateHlsSegments } from '../utils/generateHlsSegments';
 import { MULTER_UPLOAD_FOLDER } from '../utils/multer';
 
 export default class VideosController {
@@ -22,6 +23,7 @@ export default class VideosController {
     try {
       // Convert the uploaded video to different resolutions
       await convertVideoResolution(req.file.path, MULTER_UPLOAD_FOLDER, req.file.filename);
+      await generateHlsSegments(req.file.path, req.file.filename);
 
       // Create a video record in the database
       const video = await this.service.createVideo(

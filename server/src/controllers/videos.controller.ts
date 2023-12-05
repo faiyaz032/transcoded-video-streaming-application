@@ -1,8 +1,17 @@
 import { RequestHandler } from 'express';
 import fs from 'fs';
+import { mkdir } from 'fs/promises';
+import path from 'path';
+import { promisify } from 'util';
 import VideosService from '../services/videos.service';
 import AppError from '../utils/AppError';
-import { generateHlsSegments } from '../utils/generateHlsSegments';
+import createMasterPlaylist from '../utils/createMasterPlaylist';
+import getFileName from '../utils/getFileName';
+import { MULTER_UPLOAD_FOLDER } from '../utils/multer';
+import runFfmpegCommand from '../utils/runFfmpegCommand';
+
+//promisify the unlink function
+const unlinkAsync = promisify(fs.unlink);
 
 export default class VideosController {
   private service;
@@ -13,24 +22,49 @@ export default class VideosController {
 
   // Request handler to create a video
   createVideo: RequestHandler = async (req, res, next) => {
-    console.log(req.file);
-
     // Check if a video file was uploaded
     if (!req.file) return next(new AppError(400, 'No video attached'));
 
-    try {
-      // Convert the uploaded video to different resolutions
-      await generateHlsSegments(req.file.path, req.file.filename, ['720p', '1080p']);
+    const qualities = ['360', '480', '720', '1080'];
+    const fileName = getFileName(req.file.filename);
+    const videoDirectory = path.join(MULTER_UPLOAD_FOLDER, fileName);
 
-      // Create a video record in the database
+    try {
+      if (!fs.existsSync(videoDirectory)) {
+        await mkdir(videoDirectory);
+      }
+
+      await Promise.all(
+        qualities.map(async quality => {
+          const qualityPath = path.join(videoDirectory, quality);
+          if (!fs.existsSync(qualityPath)) {
+            await mkdir(qualityPath);
+          }
+        })
+      );
+
+      // Run ffmpeg commands for each quality
+      await Promise.all(
+        qualities.map(async quality => {
+          await runFfmpegCommand(req.file?.filename as string, quality);
+        })
+      );
+
+      //create master playlist
+      await createMasterPlaylist(videoDirectory);
+
+      //save the video data in the database
       const video = await this.service.createVideo(
         req.body,
         req.file?.filename as string,
         req.file?.path as string
       );
 
+      // delete the video file from disk
+      await unlinkAsync(req.file.path);
+
       // Send a success response
-      res.send({
+      res.status(201).json({
         status: 'success',
         message: 'Video Uploaded Successfully',
         data: video,
